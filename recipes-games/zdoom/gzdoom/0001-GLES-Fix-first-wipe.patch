@@ -1,0 +1,26 @@
+From 04dbb8bb0c959015532e124616081812c4698903 Mon Sep 17 00:00:00 2001
+From: Emile Belanger <emile.belanger@gmail.com>
+Date: Sun, 29 Jan 2023 15:56:14 +0000
+Subject: [PATCH 1/2] GLES: Fix first wipe
+
+Upstream-Status: Accepted [c8bd2deb1ead3e668a8ba7d6ec4be2a84b36852a]
+---
+ src/common/rendering/hwrenderer/data/hw_viewpointbuffer.cpp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/common/rendering/hwrenderer/data/hw_viewpointbuffer.cpp b/src/common/rendering/hwrenderer/data/hw_viewpointbuffer.cpp
+index f60cda5e1..5a94ba0bd 100644
+--- a/src/common/rendering/hwrenderer/data/hw_viewpointbuffer.cpp
++++ b/src/common/rendering/hwrenderer/data/hw_viewpointbuffer.cpp
+@@ -124,6 +124,8 @@ void HWViewpointBuffer::Clear()
+ 
+ 	if (needNewPipeline)
+ 	{
++		mLastMappedIndex = UINT_MAX;
++
+ 		mPipelinePos++;
+ 		mPipelinePos %= mPipelineNbr;
+ 	}
+-- 
+2.33.0
+
