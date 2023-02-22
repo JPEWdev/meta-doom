@@ -12,7 +12,7 @@ SRC_URI = "\
 
 inherit systemd features_check
 
-REQUIRED_DISTRO_FEATURES = "systemd"
+REQUIRED_DISTRO_FEATURES = "systemd wayland"
 
 do_install() {
     install -d ${D}${systemd_system_unitdir}
