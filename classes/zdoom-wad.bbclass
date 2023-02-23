@@ -1,5 +1,8 @@
 SECTION = "games"
 
+# WADs are architecture independent
+PACKAGE_ARCH ?= "all"
+
 WADS ??= ""
 
 do_install() {
