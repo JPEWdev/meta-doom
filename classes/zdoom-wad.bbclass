@@ -3,6 +3,8 @@ SECTION = "games"
 # WADs are architecture independent
 PACKAGE_ARCH ?= "all"
 
+inherit allarch
+
 WADS ??= ""
 
 do_install() {
