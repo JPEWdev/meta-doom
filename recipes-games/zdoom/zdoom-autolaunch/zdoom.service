@@ -11,6 +11,7 @@ Wants=weston.socket
 
 [Service]
 Type=simple
+Restart=always
 ExecStart=/usr/bin/zdoom -config /etc/zdoom/zdoom.ini
 User=weston
 Environment=WAYLAND_DISPLAY=/run/wayland-0
