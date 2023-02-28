@@ -8,10 +8,11 @@ Provides recipes to build several variants of [ZDoom](https://zdoom.org/).
 
 ## Selecting a ZDoom variant
 
-You will need to select which variant of ZDoom you want to use for your
-platform. In most cases, you should select `gzdoom`, however for older hardware
-or 32-bit systems, `lzdoom` is a better option. To select a variant, add the
-following to local.conf:
+The layers sets a default `PREFERRED_PROVIDER` for `virtual/zdoom` to try an
+guess which ZDoom variant you should use. In most cases, `gzdoom` is preferred,
+but this variant doesn't support 32-bit devices, in which case the default will
+be `lzdoom`. If you want to override the automatic selection, add the following
+to local.conf:
 
     PREFERRED_PROVIDER_virtual/zdoom = "gzdoom"
 
