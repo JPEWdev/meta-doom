@@ -1,0 +1,59 @@
+From 6cecad0a88de2cb9ad3d5fe747615e13d3817982 Mon Sep 17 00:00:00 2001
+From: Joshua Watt <JPEWhacker@gmail.com>
+Date: Mon, 27 Feb 2023 21:32:05 -0600
+Subject: [PATCH] Add rudimentary OpenGL ES Support
+
+Add support for correct initializing SDL2 with GLES2 support, which is
+particularly important when using the wayland video driver. Note that
+this doesn't enable any sort of acceleration, as zdoom will just
+blitting to a texture.
+
+The 'gl_es' var matches the same functionality as the latest version of
+gzdoom
+
+Upstream-Status: Inactive-Upstream [lastrelease: 2016]
+Signed-off-by: Joshua Watt <JPEWhacker@gmail.com>
+---
+ src/posix/sdl/sdlvideo.cpp | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
+
+diff --git a/src/posix/sdl/sdlvideo.cpp b/src/posix/sdl/sdlvideo.cpp
+index c995983..c2a1324 100644
+--- a/src/posix/sdl/sdlvideo.cpp
++++ b/src/posix/sdl/sdlvideo.cpp
+@@ -129,6 +129,11 @@ CUSTOM_CVAR (Float, bgamma, 1.f, CVAR_ARCHIVE|CVAR_GLOBALCONFIG)
+ 	}
+ }
+ 
++CUSTOM_CVAR(Bool, gl_es, false, CVAR_ARCHIVE | CVAR_GLOBALCONFIG | CVAR_NOINITCALL)
++{
++	Printf("This won't take effect until " GAMENAME " is restarted.\n");
++}
++
+ // PRIVATE DATA DEFINITIONS ------------------------------------------------
+ 
+ // Dummy screen sizes to pass when windowed
+@@ -371,12 +376,21 @@ SDLFB::SDLFB (int width, int height, bool fullscreen, SDL_Window *oldwin)
+ 		FString caption;
+ 		caption.Format(GAMESIG " %s (%s)", GetVersionString(), GetGitTime());
+ 
++                if (gl_es) {
++                        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
++                        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
++                        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
++                        SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengles2");
++                }
++
+ 		Screen = SDL_CreateWindow (caption,
+ 			SDL_WINDOWPOS_UNDEFINED_DISPLAY(vid_adapter), SDL_WINDOWPOS_UNDEFINED_DISPLAY(vid_adapter),
+-			width, height, (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0)|SDL_WINDOW_RESIZABLE);
++			width, height, (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0)|SDL_WINDOW_RESIZABLE|SDL_WINDOW_OPENGL);
+ 
+-		if (Screen == NULL)
++		if (Screen == NULL) {
++                        printf("Could not create screen: %s\n", SDL_GetError());
+ 			return;
++                }
+ 	}
+ 
+ 	Renderer = NULL;

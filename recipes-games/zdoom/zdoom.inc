@@ -20,7 +20,9 @@ do_compile:prepend:class-target() {
 }
 
 do_install:append() {
-    ln -s ${BPN} ${D}${bindir}/zdoom
+    if [ ! -e ${D}${bindir}/zdoom ]; then
+        ln -s ${BPN} ${D}${bindir}/zdoom
+    fi
 }
 
 BBCLASSEXTEND += "native"

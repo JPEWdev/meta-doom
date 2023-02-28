@@ -1,0 +1,28 @@
+From b914004d559ca0f6732ccc7af19995bcecf5fa25 Mon Sep 17 00:00:00 2001
+From: Joshua Watt <JPEWhacker@gmail.com>
+Date: Mon, 27 Feb 2023 21:31:50 -0600
+Subject: [PATCH] d_main: Don't change FPU on ARM
+
+The FPU flags aren't defined on ARM and aren't necessary anyway.
+
+Upstream-Status: Inactive-Upstream [lastrelease: 2016]
+Signed-off-by: Joshua Watt <JPEWhacker@gmail.com>
+---
+ src/d_main.cpp | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/d_main.cpp b/src/d_main.cpp
+index 7bfb187..b740106 100644
+--- a/src/d_main.cpp
++++ b/src/d_main.cpp
+@@ -1949,7 +1949,9 @@ static void D_DoomInit()
+ 	// Set the FPU precision to 53 significant bits. This is the default
+ 	// for Visual C++, but not for GCC, so some slight math variances
+ 	// might crop up if we leave it alone.
+-#if defined(_FPU_GETCW)
++#if defined __arm__
++// Not available on arm
++#elif defined(_FPU_GETCW)
+ 	{
+ 		int cw;
+ 		_FPU_GETCW(cw);

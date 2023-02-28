@@ -1,0 +1,49 @@
+From 5ab6ad0e1f97c3a60a2c93c48101533f5168a46f Mon Sep 17 00:00:00 2001
+From: Joshua Watt <JPEWhacker@gmail.com>
+Date: Mon, 27 Feb 2023 21:31:36 -0600
+Subject: [PATCH] qemu-music-emu: Remove check for old GCC
+
+GCC 4.1 is really old and this check was failing to detect the version,
+so remove the check and unconditionally set the visibility flags
+
+Upstream-Status: Inactive-Upstream [lastrelease: 2016]
+Signed-off-by: Joshua Watt <JPEWhacker@gmail.com>
+---
+ game-music-emu/CMakeLists.txt | 24 ++++--------------------
+ 1 file changed, 4 insertions(+), 20 deletions(-)
+
+diff --git a/game-music-emu/CMakeLists.txt b/game-music-emu/CMakeLists.txt
+index f68a452..2bdc3e7 100644
+--- a/game-music-emu/CMakeLists.txt
++++ b/game-music-emu/CMakeLists.txt
+@@ -79,26 +79,10 @@ endif()
+ 
+ # Check for GCC "visibility" support.
+ if (CMAKE_COMPILER_IS_GNUCXX)
+-   check_cxx_compiler_flag (-fvisibility=hidden __LIBGME_TEST_VISIBILITY)
+-   set (ENABLE_VISIBILITY OFF)
+-   if (__LIBGME_TEST_VISIBILITY)
+-      # get the gcc version
+-      exec_program(${CMAKE_CXX_COMPILER} ARGS --version OUTPUT_VARIABLE _gcc_version_info)
+-      string (REGEX MATCH "[3-9]\\.[0-9]\\.[0-9]" _gcc_version "${_gcc_version_info}")
+-
+-      # gcc <4.1 had poor support for symbol visibility
+-      if ((${_gcc_version} VERSION_GREATER "4.1") OR (${_gcc_version} VERSION_EQUAL "4.1"))
+-         set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
+-         set (ENABLE_VISIBILITY ON)
+-         add_definitions (-DLIBGME_VISIBILITY)
+-
+-         # GCC >= 4.2 also correctly supports making inline members have hidden
+-         # visibility by default.
+-         if ((${_gcc_version} VERSION_GREATER "4.2") OR (${_gcc_version} VERSION_EQUAL "4.2"))
+-            set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility-inlines-hidden")
+-         endif()
+-      endif()
+-   endif() # test visibility
++    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
++    set (ENABLE_VISIBILITY ON)
++    add_definitions (-DLIBGME_VISIBILITY)
++    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility-inlines-hidden")
+ endif (CMAKE_COMPILER_IS_GNUCXX)
+ 
+ # Cache this result
