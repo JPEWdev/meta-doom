@@ -15,5 +15,7 @@ do_install() {
     done
 }
 
-FILES:${PN} += "/usr/share/games/doom/"
+WAD_DIR = "/usr/share/games/doom"
+
+FILES:${PN} += "${WAD_DIR}/"
 RDEPENDS:${PN} += "zdoom"
