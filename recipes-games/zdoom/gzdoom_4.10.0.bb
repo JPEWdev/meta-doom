@@ -14,6 +14,7 @@ DEPENDS = "\
 SRC_URI = "git://github.com/ZDoom/gzdoom.git;protocol=http;nobranch=1 \
     file://0001-GLES-Fix-first-wipe.patch \
     file://0002-Fixing-GLES-mode-to-work-on-real-GLES-hardware-and-O.patch \
+    file://0001-posix-sdl-Stop-reading-STDIN-on-EOF.patch \
     "
 SRCREV = "75da94aecd9b1c4c2e16b449dea1b9f9838c1af2"
 

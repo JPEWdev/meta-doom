@@ -1,0 +1,67 @@
+From f255207a5ddceaa8d5fa759232ee74c99833a17e Mon Sep 17 00:00:00 2001
+From: Joshua Watt <JPEWhacker@gmail.com>
+Date: Wed, 8 Mar 2023 16:34:14 -0600
+Subject: [PATCH] posix: sdl: Stop reading STDIN on EOF
+
+If EOF is read on stdin (such as when it is /dev/null), stop calling
+select() on it. Otherwise, the code goes into an infinite loop
+attempting to read from stdin which is always ready but never has any
+data and it never calls the timer callback to progress.
+---
+ src/posix/sdl/st_start.cpp | 24 ++++++++++++++++++------
+ 1 file changed, 18 insertions(+), 6 deletions(-)
+
+diff --git a/src/posix/sdl/st_start.cpp b/src/posix/sdl/st_start.cpp
+index 8831c39ae5..08f3609a70 100644
+--- a/src/posix/sdl/st_start.cpp
++++ b/src/posix/sdl/st_start.cpp
+@@ -290,6 +290,7 @@ bool FTTYStartupScreen::NetLoop(bool (*timer_callback)(void *), void *userdata)
+ 	struct timeval tv;
+ 	int retval;
+ 	char k;
++	bool stdin_eof = false;
+ 
+ 	for (;;)
+ 	{
+@@ -298,7 +299,10 @@ bool FTTYStartupScreen::NetLoop(bool (*timer_callback)(void *), void *userdata)
+ 		tv.tv_usec = 500000;
+ 
+ 		FD_ZERO (&rfds);
+-		FD_SET (STDIN_FILENO, &rfds);
++		if (!stdin_eof)
++		{
++			FD_SET (STDIN_FILENO, &rfds);
++		}
+ 
+ 		retval = select (1, &rfds, NULL, NULL, &tv);
+ 
+@@ -314,13 +318,21 @@ bool FTTYStartupScreen::NetLoop(bool (*timer_callback)(void *), void *userdata)
+ 				return true;
+ 			}
+ 		}
+-		else if (read (STDIN_FILENO, &k, 1) == 1)
++		else
+ 		{
+-			// Check input on stdin
+-			if (k == 'q' || k == 'Q')
++			ssize_t amt = read (STDIN_FILENO, &k, 1);	// Check input on stdin
++			if (amt == 0)
++			{
++				// EOF. Stop reading
++				stdin_eof = true;
++			}
++			else if (amt == 1)
+ 			{
+-				fprintf (stderr, "\nNetwork game synchronization aborted.");
+-				return false;
++				if (k == 'q' || k == 'Q')
++				{
++					fprintf (stderr, "\nNetwork game synchronization aborted.");
++					return false;
++				}
+ 			}
+ 		}
+ 	}
+-- 
+2.33.0
+

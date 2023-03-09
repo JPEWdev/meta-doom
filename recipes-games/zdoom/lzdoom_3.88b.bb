@@ -11,7 +11,10 @@ DEPENDS = "\
 
 PROVIDES = "virtual/zdoom"
 
-SRC_URI = "https://zdoom.org/files/lzdoom/src/3.88b.zip"
+SRC_URI = "\
+    https://zdoom.org/files/lzdoom/src/3.88b.zip \
+    file://0001-posix-sdl-Stop-reading-STDIN-on-EOF.patch  \
+    "
 SRC_URI[sha256sum] = "fc2b6657ff19fb4df58308966bb92f50cb1fe0d5876142dc17770c6f4a99a006"
 
 S = "${WORKDIR}/gzdoom-${PV}"
